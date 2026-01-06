@@ -22,6 +22,7 @@ A simple pawnshop script for QBCore-based FiveM servers that allows players to s
 - `qb-menu`
 - `qb-input`
 - `interact` export (for NPC interaction)
+- `ox_inventory`
 - FiveM server
 
 ---
