@@ -76,6 +76,3 @@ Config.SellableItems = {
 
 -- Minimum amount a player can sell at once
 Config.MinSellAmount = 1
-
--- Interaction text displayed to players
-Config.InteractText = "[E] Sell Items"
