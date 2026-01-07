@@ -1,16 +1,18 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local pawnPed = nil
 
--- Spawn pawnshop NPC
+-- Spawn pawnshop NPC and blip
 Citizen.CreateThread(function()
     local pedModel = Config.PawnLocation.ped
     local coords = Config.PawnLocation.coords
 
+    -- Load model
     RequestModel(GetHashKey(pedModel))
     while not HasModelLoaded(GetHashKey(pedModel)) do
         Wait(10)
     end
 
+    -- Create Ped
     pawnPed = CreatePed(4, GetHashKey(pedModel), coords.x, coords.y, coords.z, coords.w, false, true)
     SetPedFleeAttributes(pawnPed, 0, 0)
     SetPedDropsWeaponsWhenDead(pawnPed, false)
@@ -27,13 +29,24 @@ Citizen.CreateThread(function()
         interactDst = 1.8,
         options = {
             {
-                label = Config.InteractText or "Sell Items",
+                label = "Sell Items",
                 action = function(entity, coords, args)
                     openPawnShopMenu()
                 end
             }
         }
     })
+
+    -- Add map blip
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    SetBlipSprite(blip, 500)           -- Blip icon (can be changed)
+    SetBlipDisplay(blip, 4)
+    SetBlipScale(blip, 0.8)
+    SetBlipAsShortRange(true)
+    SetBlipColour(blip, 2)             -- Green color
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Pawnshop")
+    EndTextCommandSetBlipName(blip)
 end)
 
 -- Menu function using qb-menu + qb-input
@@ -44,19 +57,19 @@ function openPawnShopMenu()
             return
         end
 
-local menuElements = {}
-for i,v in ipairs(items) do
-    table.insert(menuElements, {
-        header = v.label,  -- Item name only
-        txt = "Amount: " .. v.amount .. " | Price: $" .. v.price .. "\nSell this item",
-        params = {
-            event = "pawnshop:sellItemPrompt",
-            args = { itemName = v.name, maxAmount = v.amount }
-        }
-    })
-end
+        local menuElements = {}
+        for i,v in ipairs(items) do
+            table.insert(menuElements, {
+                header = v.label,  -- Item name only
+                txt = "Amount: " .. v.amount .. " | Price: $" .. v.price .. "\nSell this item",
+                params = {
+                    event = "pawnshop:sellItemPrompt",
+                    args = { itemName = v.name, maxAmount = v.amount }
+                }
+            })
+        end
 
-exports['qb-menu']:openMenu(menuElements)
+        exports['qb-menu']:openMenu(menuElements)
     end)
 end
 
